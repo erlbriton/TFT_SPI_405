@@ -1,0 +1,261 @@
+/* USER CODE BEGIN Header */
+/**
+  ******************************************************************************
+  * @file           : main.c
+  * @brief          : Main program body
+  ******************************************************************************
+  * @attention
+  *
+  * Copyright (c) 2026 STMicroelectronics.
+  * All rights reserved.
+  *
+  * This software is licensed under terms that can be found in the LICENSE file
+  * in the root directory of this software component.
+  * If no LICENSE file comes with this software, it is provided AS-IS.
+  *
+  ******************************************************************************
+  */
+/* USER CODE END Header */
+/* Includes ------------------------------------------------------------------*/
+#include "main.h"
+#include "dma.h"
+#include "spi.h"
+#include "tim.h"
+#include "usart.h"
+#include "gpio.h"
+
+/* Private includes ----------------------------------------------------------*/
+/* USER CODE BEGIN Includes */
+#include "Init.h"
+#include "images.h"
+#include "usart_dma_rx.h"
+/* USER CODE END Includes */
+
+/* Private typedef -----------------------------------------------------------*/
+/* USER CODE BEGIN PTD */
+
+/* USER CODE END PTD */
+
+/* Private define ------------------------------------------------------------*/
+/* USER CODE BEGIN PD */
+uint8_t hh = 3;//Корректировка высоты картинки
+/* USER CODE END PD */
+
+/* Private macro -------------------------------------------------------------*/
+/* USER CODE BEGIN PM */
+
+/* USER CODE END PM */
+
+/* Private variables ---------------------------------------------------------*/
+
+/* USER CODE BEGIN PV */
+
+/* USER CODE END PV */
+
+/* Private function prototypes -----------------------------------------------*/
+void SystemClock_Config(void);
+/* USER CODE BEGIN PFP */
+
+/* USER CODE END PFP */
+
+/* Private user code ---------------------------------------------------------*/
+/* USER CODE BEGIN 0 */
+
+/* USER CODE END 0 */
+void Aggressive_UART_Reset_And_Start(UART_HandleTypeDef *huart)
+{
+    // 1. Короткая Пауза: Заменяем долгую паузу на короткую (0.5 сек) для стабилизации.
+    HAL_Delay(500);
+
+    // 2. Полная Де-инициализация UART: Сброс регистров и внутреннего состояния HAL.
+    HAL_UART_DeInit(huart);
+
+    // 3. Де-инициализация DMA-канала: Сброс DMA, который мог зависнуть.
+    if (huart->hdmarx != NULL) {
+        HAL_DMA_DeInit(huart->hdmarx);
+        // Важно: очистить указатель, чтобы переинициализация прошла чисто.
+        huart->hdmarx = NULL;
+    }
+
+    // 4. Полная Ре-инициализация: Вызов сгенерированной CubeMX функции для полной настройки.
+    MX_USART1_UART_Init();
+
+    // 5. Очистка Флагов: Гарантия чистого старта.
+    __HAL_UART_CLEAR_FLAG(huart,
+        UART_FLAG_IDLE | UART_FLAG_ORE | UART_FLAG_NE | UART_FLAG_FE | UART_FLAG_PE);
+
+    // 6. Повторный Запуск приема DMA
+    // Убедитесь, что rxBuffer и RX_BUFFER_SIZE определены глобально.
+    HAL_UART_Receive_DMA(huart, rxBuffer, RX_BUFFER_SIZE);
+}
+/**
+  * @brief  The application entry point.
+  * @retval int
+  */
+int main(void)
+{
+
+  /* USER CODE BEGIN 1 */
+
+  /* USER CODE END 1 */
+
+  /* MCU Configuration--------------------------------------------------------*/
+
+  /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
+  HAL_Init();
+
+  /* USER CODE BEGIN Init */
+
+  /* USER CODE END Init */
+
+  /* Configure the system clock */
+  SystemClock_Config();
+
+  /* USER CODE BEGIN SysInit */
+
+  /* USER CODE END SysInit */
+
+  /* Initialize all configured peripherals */
+  MX_GPIO_Init();
+  MX_DMA_Init();
+  MX_SPI1_Init();
+  MX_USART1_UART_Init();
+  MX_TIM2_Init();
+  MX_TIM4_Init();
+  MX_TIM5_Init();
+  /* USER CODE BEGIN 2 */
+  DWT_Init();
+
+  	init_9488();
+
+  //Чертим прямоугольник по периметру  72x23
+  	fillScreen(0x0000);
+  	fillRect(0, (0 + hh), 465, 2, ILI9488_CYAN); //горизонт
+  	fillRect(0, (148 + hh), 465, 2, ILI9488_CYAN); //горизонт
+  	fillRect(0, (2 + hh), 2, 148, ILI9488_CYAN); //вертикаль
+  	fillRect(463, (2 + hh), 2, 148, ILI9488_CYAN); //вертикаль
+  	fillRect(149, (0 + hh), 2, 150, ILI9488_CYAN); //вертикаль
+
+  	drawImage(barbecue, 426, (6 + hh), 30, 140);
+  	drawImage(termometr, 300, (6 + hh), 14, 35);
+  	drawImage(regulator, 290, (107 + hh), 35, 35);
+
+  	drawImage(zero_green, 342, (8 + hh), 15, 35);  //Текущая
+  	drawImage(zero_green, 360, (8 + hh), 15, 35);  //темпера
+  	drawImage(zero_green, 378, (8 + hh), 15, 35);  //тура
+
+  	drawImage(zero_green, 342, (108 + hh), 15, 35);  //Установленная
+  	drawImage(zero_green, 360, (108 + hh), 15, 35);  //темпера
+  	drawImage(zero_green, 378, (108 + hh), 15, 35);  //тура
+
+  	drawImage(zero, 318, (53 + hh), 20, 45);  //Время
+  	drawImage(zero, 340, (53 + hh), 20, 45);  //--||--
+  	drawImage(zero, 375, (53 + hh), 20, 45);  //--||--
+  	drawImage(zero, 397, (53 + hh), 20, 45);  //--||--
+
+  	drawImage(dots, 365, (63 + hh), 5, 25);
+
+  	drawImage(grad_C, 402, (8 + hh), 8, 8);
+  	drawImage(grad_C, 402, (108 + hh), 8, 8);
+
+  	drawImage(cooler_0, 200, (70 + hh), 50, 52);  //Вентилятор
+
+  	HAL_TIM_Base_Stop_IT(&htim2);
+  	__HAL_UART_DISABLE(&huart1);
+  	__HAL_UART_CLEAR_FLAG(&huart1,
+  	UART_FLAG_IDLE | UART_FLAG_ORE | UART_FLAG_NE | UART_FLAG_FE | UART_FLAG_PE);
+  	__HAL_UART_ENABLE(&huart1);
+  	HAL_UART_Receive_DMA(&huart1, rxBuffer, RX_BUFFER_SIZE);//Запускаем USART через DMA
+
+  /* USER CODE END 2 */
+
+  /* Infinite loop */
+  /* USER CODE BEGIN WHILE */
+  while (1)
+  {
+    /* USER CODE END WHILE */
+
+    /* USER CODE BEGIN 3 */
+  }
+  /* USER CODE END 3 */
+}
+
+/**
+  * @brief System Clock Configuration
+  * @retval None
+  */
+void SystemClock_Config(void)
+{
+  RCC_OscInitTypeDef RCC_OscInitStruct = {0};
+  RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
+
+  /** Configure the main internal regulator output voltage
+  */
+  __HAL_RCC_PWR_CLK_ENABLE();
+  __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
+
+  /** Initializes the RCC Oscillators according to the specified parameters
+  * in the RCC_OscInitTypeDef structure.
+  */
+  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
+  RCC_OscInitStruct.HSEState = RCC_HSE_ON;
+  RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
+  RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
+  RCC_OscInitStruct.PLL.PLLM = 4;
+  RCC_OscInitStruct.PLL.PLLN = 168;
+  RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
+  RCC_OscInitStruct.PLL.PLLQ = 4;
+  if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+  /** Initializes the CPU, AHB and APB buses clocks
+  */
+  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
+                              |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
+  RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
+  RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
+  RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV4;
+  RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV2;
+
+  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_5) != HAL_OK)
+  {
+    Error_Handler();
+  }
+}
+
+/* USER CODE BEGIN 4 */
+
+/* USER CODE END 4 */
+
+/**
+  * @brief  This function is executed in case of error occurrence.
+  * @retval None
+  */
+void Error_Handler(void)
+{
+  /* USER CODE BEGIN Error_Handler_Debug */
+  /* User can add his own implementation to report the HAL error return state */
+  __disable_irq();
+  while (1)
+  {
+  }
+  /* USER CODE END Error_Handler_Debug */
+}
+#ifdef USE_FULL_ASSERT
+/**
+  * @brief  Reports the name of the source file and the source line number
+  *         where the assert_param error has occurred.
+  * @param  file: pointer to the source file name
+  * @param  line: assert_param error line source number
+  * @retval None
+  */
+void assert_failed(uint8_t *file, uint32_t line)
+{
+  /* USER CODE BEGIN 6 */
+  /* User can add his own implementation to report the file name and line number,
+     ex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
+  /* USER CODE END 6 */
+}
+#endif /* USE_FULL_ASSERT */
