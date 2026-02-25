@@ -62,32 +62,7 @@ void SystemClock_Config(void);
 /* USER CODE BEGIN 0 */
 
 /* USER CODE END 0 */
-void Aggressive_UART_Reset_And_Start(UART_HandleTypeDef *huart)
-{
-    // 1. Короткая Пауза: Заменяем долгую паузу на короткую (0.5 сек) для стабилизации.
-    HAL_Delay(500);
 
-    // 2. Полная Де-инициализация UART: Сброс регистров и внутреннего состояния HAL.
-    HAL_UART_DeInit(huart);
-
-    // 3. Де-инициализация DMA-канала: Сброс DMA, который мог зависнуть.
-    if (huart->hdmarx != NULL) {
-        HAL_DMA_DeInit(huart->hdmarx);
-        // Важно: очистить указатель, чтобы переинициализация прошла чисто.
-        huart->hdmarx = NULL;
-    }
-
-    // 4. Полная Ре-инициализация: Вызов сгенерированной CubeMX функции для полной настройки.
-    MX_USART1_UART_Init();
-
-    // 5. Очистка Флагов: Гарантия чистого старта.
-    __HAL_UART_CLEAR_FLAG(huart,
-        UART_FLAG_IDLE | UART_FLAG_ORE | UART_FLAG_NE | UART_FLAG_FE | UART_FLAG_PE);
-
-    // 6. Повторный Запуск приема DMA
-    // Убедитесь, что rxBuffer и RX_BUFFER_SIZE определены глобально.
-    HAL_UART_Receive_DMA(huart, rxBuffer, RX_BUFFER_SIZE);
-}
 /**
   * @brief  The application entry point.
   * @retval int
