@@ -18,12 +18,19 @@
 #define    DC_cmd   LL_GPIO_ResetOutputPin(DC_LSD_GPIO_Port, DC_LSD_Pin)
 #define    DC_data   LL_GPIO_SetOutputPin(DC_LSD_GPIO_Port, DC_LSD_Pin)
 
+//#define    DC_cmd   LL_GPIO_ResetOutputPin(GPIOB, LL_GPIO_PIN_6)//Для проверки
+//#define    DC_data   LL_GPIO_SetOutputPin(GPIOB, LL_GPIO_PIN_6)//Для проверки
+//#define    CS_set  LL_GPIO_ResetOutputPin(GPIOA, LL_GPIO_PIN_4)//Для проверки
+//#define    CS_reset  LL_GPIO_SetOutputPin(GPIOA, LL_GPIO_PIN_4)//Для проверки
+
 
 void ILI9488_Reset()
 {
-    HAL_GPIO_WritePin(RST_GPIO_Port, RST_Pin, GPIO_PIN_RESET);
+	 LL_GPIO_ResetOutputPin(RST_GPIO_Port, RST_Pin);
+  //  LL_GPIO_ResetOutputPin(GPIOB, LL_GPIO_PIN_0);//Для проверки
     HAL_Delay(5);
-    HAL_GPIO_WritePin(RST_GPIO_Port, RST_Pin, GPIO_PIN_SET);
+    LL_GPIO_SetOutputPin(RST_GPIO_Port, RST_Pin);
+   // LL_GPIO_SetOutputPin(GPIOB, LL_GPIO_PIN_0);//Для проверки
 }
 
 void DWT_Init(void)
