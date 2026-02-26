@@ -8,6 +8,8 @@
 #ifndef INC_IMAGES_H_
 #define INC_IMAGES_H_
 
+#include "usart_dma_rx.h"
+
 #define tempset1_plc   378,   (108+hh), 15,  35
 #define tempset2_plc   360,   (108+hh), 15,  35
 #define tempset3_plc   342,   (108+hh), 15,  35
@@ -76,5 +78,6 @@ extern uint8_t new_fire_180; //Пламя вверху (15-й член ново�
 extern uint8_t new_tmp_plt1; //Новая температура платы единицы(16-й член нового буфера)
 extern uint8_t new_tmp_plt2; //Новая температура платы десятки(17-й член нового буфера)
 extern uint8_t new_mode_2; //2-й режим кнопки новый(18-й член нового буфера)
+//void memcpy(uint8_t, uint8_t, uint8_t);
 
 #endif /* INC_IMAGES_H_ */

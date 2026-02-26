@@ -13,6 +13,11 @@
 #define    DWT_CYCCNT    *(volatile unsigned long *)0xE0001004
 #define    DWT_CONTROL   *(volatile unsigned long *)0xE0001000
 #define    SCB_DEMCR     *(volatile unsigned long *)0xE000EDFC
+#define    CS_set  LL_GPIO_ResetOutputPin(CS_LCD_GPIO_Port, CS_LCD_Pin)
+#define    CS_reset  LL_GPIO_SetOutputPin(CS_LCD_GPIO_Port, CS_LCD_Pin)
+#define    DC_cmd   LL_GPIO_ResetOutputPin(DC_LSD_GPIO_Port, DC_LSD_Pin)
+#define    DC_data   LL_GPIO_SetOutputPin(DC_LSD_GPIO_Port, DC_LSD_Pin)
+
 
 void ILI9488_Reset()
 {
@@ -42,16 +47,19 @@ void delay_us(uint32_t us)
       while (delta(t0, DWT->CYCCNT) < us_count_tic) ;
 }
 
- void writecommand(uint8_t cmd)
+ void writecommand(uint8_t cmd){
+	     while (LL_SPI_IsActiveFlag_BSY(SPI1)); // Ждем завершения предыдущих передач (если они были)
+	     DC_cmd;// DC в LOW (режим команды)
+	     CS_set;//CS в LOW (выбор чипа)
+	     LL_SPI_TransmitData8(SPI1, cmd);//Кидаем байт в регистр
+	     while (LL_SPI_IsActiveFlag_BSY(SPI1));//Ждем, пока байт уйдет, прежде чем менять DC обратно
+	 }
 
-{
-   //ADDR_CMD = cmd;
-}
- void writedata(unsigned char dt)
-
-{
-//        ADDR_DATA = dt;
-//        delay_us(1);
+ void writedata(uint8_t dt){
+	 while (!LL_SPI_IsActiveFlag_TXE(SPI1));//Ждем, если буфер передачи полон
+	 DC_data;//DC в HIGH (режим данных)
+	 CS_set;//CS в LOW (выбор чипа)
+	 LL_SPI_TransmitData8(SPI1, dt);//Кидаем байт в регистр
 }
 
 
@@ -202,7 +210,7 @@ if((y + h - 1) >= ILI9488_TFTHEIGHT) h = ILI9488_TFTHEIGHT - y;
 setAddrWindow(x, y, x+w-1, y+h-1);
 
 uint8_t linebuff[w*3+1];
-uint16_t pixels = w*h;
+//uint16_t pixels = w*h;
 uint32_t count = 0;
 for (uint16_t i = 0; i < h; i++)
 {
@@ -234,8 +242,8 @@ writedata(linebuff[b]);
 	write16BitColor(color);
   }
 
-  void pushColors(uint16_t *data, uint8_t len, boolean first)
-  {
+#if 0
+  void pushColors(uint16_t *data, uint8_t len, boolean first){
 	uint16_t color;
 	uint8_t  buff[len*3+1];
 	uint16_t count = 0;
@@ -251,9 +259,8 @@ writedata(linebuff[b]);
 	  buff[count] = ((color & 0x001F)* 255) / 31;
 	  count++;
 	}
-
   }
-
+#endif
 	     	      void write16BitColor(uint16_t color)
 	     	      {
 	     	        uint8_t r = (color & 0xF800) >> 11;
@@ -308,8 +315,7 @@ writedata(linebuff[b]);
 
 	     	      }
 
-	     	      void fillRect(int16_t x, int16_t y, int16_t w, int16_t h, uint16_t color)
-	     	      {
+	     	      void fillRect(int16_t x, int16_t y, int16_t w, int16_t h, uint16_t color) {
 	     	        if((x + w - 1) >= ILI9488_TFTWIDTH)  w = ILI9488_TFTWIDTH  - x;
 	     	        if((y + h - 1) >= ILI9488_TFTHEIGHT) h = ILI9488_TFTHEIGHT - y;
 

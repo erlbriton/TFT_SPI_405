@@ -95,5 +95,12 @@ void init(void);
 #define ILI9488_PINK        0xF81F
 #define boolean uint8_t
 
+void fillRect(int16_t , int16_t , int16_t , int16_t , uint16_t);
+void write16BitColor(uint16_t);
+void drawImage(const uint16_t* img, uint16_t x, uint16_t y, uint16_t w, uint16_t h);
+void DWT_Init(void);
+void fillScreen(uint16_t color);
+void init_9488(void);
+
 
 #endif /* INC_INIT_H_ */

@@ -29,6 +29,17 @@ extern "C" {
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f4xx_hal.h"
 
+#include "stm32f4xx_ll_rcc.h"
+#include "stm32f4xx_ll_bus.h"
+#include "stm32f4xx_ll_system.h"
+#include "stm32f4xx_ll_exti.h"
+#include "stm32f4xx_ll_cortex.h"
+#include "stm32f4xx_ll_utils.h"
+#include "stm32f4xx_ll_pwr.h"
+#include "stm32f4xx_ll_dma.h"
+#include "stm32f4xx_ll_spi.h"
+#include "stm32f4xx_ll_gpio.h"
+
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
@@ -57,18 +68,30 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
-#define SCK_LCD_Pin GPIO_PIN_5
+#define RCC_IN_Pin LL_GPIO_PIN_0
+#define RCC_IN_GPIO_Port GPIOH
+#define RCC_OUT_Pin LL_GPIO_PIN_1
+#define RCC_OUT_GPIO_Port GPIOH
+#define SCK_LCD_Pin LL_GPIO_PIN_5
 #define SCK_LCD_GPIO_Port GPIOA
-#define MOSI_LCD_Pin GPIO_PIN_7
+#define MOSI_LCD_Pin LL_GPIO_PIN_7
 #define MOSI_LCD_GPIO_Port GPIOA
-#define DC_LSD_Pin GPIO_PIN_4
+#define DC_LSD_Pin LL_GPIO_PIN_4
 #define DC_LSD_GPIO_Port GPIOC
-#define RST_Pin GPIO_PIN_0
+#define RST_Pin LL_GPIO_PIN_0
 #define RST_GPIO_Port GPIOB
-#define CS_LCD_Pin GPIO_PIN_1
+#define CS_LCD_Pin LL_GPIO_PIN_1
 #define CS_LCD_GPIO_Port GPIOB
-#define pwm_Pin GPIO_PIN_6
+#define pwm_Pin LL_GPIO_PIN_6
 #define pwm_GPIO_Port GPIOC
+#define TX_Pin LL_GPIO_PIN_9
+#define TX_GPIO_Port GPIOA
+#define RX_Pin LL_GPIO_PIN_10
+#define RX_GPIO_Port GPIOA
+#define SWDIO_Pin LL_GPIO_PIN_13
+#define SWDIO_GPIO_Port GPIOA
+#define SWCLK_Pin LL_GPIO_PIN_14
+#define SWCLK_GPIO_Port GPIOA
 
 /* USER CODE BEGIN Private defines */
 extern const uint16_t zero[];//------------------------------------------------------//

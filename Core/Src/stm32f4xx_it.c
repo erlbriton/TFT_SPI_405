@@ -22,6 +22,9 @@
 #include "stm32f4xx_it.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "usart_dma_rx.h"
+#include "images.h"
+#include <string.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -240,7 +243,55 @@ void USART1_IRQHandler(void)
   /* USER CODE END USART1_IRQn 0 */
   HAL_UART_IRQHandler(&huart1);
   /* USER CODE BEGIN USART1_IRQn 1 */
+  // Проверка на прерывание по IDLE Line (Простой линии)
+ 	  if (__HAL_UART_GET_FLAG(&huart1, UART_FLAG_IDLE))
+ 	  {
+ 	      // 1. Очистка флага IDLE
+ 	      __HAL_UART_CLEAR_IDLEFLAG(&huart1);
 
+ 	      // 2. КРИТИЧНО: Остановка текущей DMA-транзакции.
+ 	      // Это переводит DMA в чистое неактивное состояние перед перезапуском.
+ 	      HAL_UART_DMAStop(&huart1);
+
+ 	      // Получаем количество принятых байтов
+ 	      // (Проверьте, что hdma_usart1_rx - это правильный хендл для DMA)
+ 	      uint16_t bytesReceived = RX_BUFFER_SIZE - __HAL_DMA_GET_COUNTER(&hdma_usart1_rx);
+
+ 	      // Если мы получили хотя бы один полный пакет данных
+ 	      if (bytesReceived >= PACKET_SIZE)
+ 	      {
+ 	          // Копируем данные в buff_new
+ 	         memcpy(buff_new, rxBuffer, PACKET_SIZE);
+
+ 	          // Обрабатываем полученный пакет данных
+ 	          if (buff_new[0] == 0x97 && buff_new[19] == 0x97) //Проверяем целостность пришедшей посылки
+ 	          {
+ 	              new_one_min  = buff_new[1];
+ 	              new_dec_min  = buff_new[2];
+ 	              new_one_h    = buff_new[3];
+ 	              new_dec_h    = buff_new[4];
+ 	              new_temp1    = buff_new[5];
+ 	              new_temp2    = buff_new[6];
+ 	              new_temp3    = buff_new[7];
+ 	              new_tempset1 = buff_new[8];
+ 	              new_tempset2 = buff_new[9];
+ 	              new_tempset3 = buff_new[10];
+ 	              new_set      = buff_new[11];
+ 	              new_watch    = buff_new[12];
+ 	              new_fire     = buff_new[13];
+ 	              new_fire_90  = buff_new[14];
+ 	              new_fire_180 = buff_new[15];
+ 	              new_tmp_plt1 = buff_new[16];
+ 	              new_tmp_plt2 = buff_new[17];
+ 	              new_mode_2   = buff_new[18];
+
+ 	              check_images();//Основная работа
+ 	          }
+ 	     }
+ 	    	      // 3. Запускаем новый прием данных через DMA
+ 	    	      // (Это выполняется даже если пакет не прошел проверку целостности, чтобы не пропустить следующий)
+ 	    	      HAL_UART_Receive_DMA(&huart1, rxBuffer, RX_BUFFER_SIZE);
+ 	    	  }
   /* USER CODE END USART1_IRQn 1 */
 }
 
