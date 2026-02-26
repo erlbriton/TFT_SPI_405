@@ -136,6 +136,8 @@ int main(void)
 
   	drawImage(cooler_0, 200, (70 + hh), 50, 52);  //Вентилятор
 
+  	HAL_Delay(50); // для стабилизации системы
+
   	HAL_TIM_Base_Stop_IT(&htim2);
   	__HAL_UART_DISABLE(&huart1);
   	__HAL_UART_CLEAR_FLAG(&huart1,
