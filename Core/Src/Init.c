@@ -74,6 +74,7 @@ void delay_us(uint32_t us)
 void init_9488()
 {
         ILI9488_Reset();
+        HAL_Delay(1000);
  	    writecommand(0xE0); // Positive Gamma Control
  	    writedata(0x00);
  	    writedata(0x03);
@@ -150,7 +151,7 @@ void init_9488()
  	    writedata(0x2C);
  	    writedata(0x82);
  	    writecommand(ILI9488_MADCTL);
- 	    writedata(0xE8);//Поворот на 180 град.
+ 	    //writedata(0xE8);//Поворот на 180 град.
  	    writedata(0x28);
 
  	    writecommand(ILI9488_SLPOUT);  //Exit Sleep

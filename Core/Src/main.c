@@ -144,6 +144,7 @@ int main(void)
   	UART_FLAG_IDLE | UART_FLAG_ORE | UART_FLAG_NE | UART_FLAG_FE | UART_FLAG_PE);
   	__HAL_UART_ENABLE(&huart1);
   	HAL_UART_Receive_DMA(&huart1, rxBuffer, RX_BUFFER_SIZE);//Запускаем USART через DMA
+  	__HAL_UART_ENABLE_IT(&huart1, UART_IT_IDLE);//Разрешаем прерывание UART по концу передачи
 
   /* USER CODE END 2 */
 
@@ -151,6 +152,10 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+	LL_GPIO_SetOutputPin(line_GPIO_Port, line_Pin);
+	HAL_Delay(500);
+	LL_GPIO_ResetOutputPin(line_GPIO_Port, line_Pin);
+		  HAL_Delay(500);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
