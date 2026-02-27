@@ -152,7 +152,10 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
-
+	  LL_GPIO_SetOutputPin(line_GPIO_Port, line_Pin);
+	  HAL_Delay(500);
+	  LL_GPIO_ResetOutputPin(line_GPIO_Port, line_Pin);
+	  HAL_Delay(500);
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */

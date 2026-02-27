@@ -92,6 +92,8 @@ void Error_Handler(void);
 #define SWDIO_GPIO_Port GPIOA
 #define SWCLK_Pin LL_GPIO_PIN_14
 #define SWCLK_GPIO_Port GPIOA
+#define line_Pin LL_GPIO_PIN_9
+#define line_GPIO_Port GPIOB
 
 /* USER CODE BEGIN Private defines */
 extern const uint16_t zero[];//------------------------------------------------------//

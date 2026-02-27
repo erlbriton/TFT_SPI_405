@@ -54,6 +54,9 @@ void MX_GPIO_Init(void)
   LL_GPIO_ResetOutputPin(GPIOC, DC_LSD_Pin|pwm_Pin);
 
   /**/
+  LL_GPIO_ResetOutputPin(line_GPIO_Port, line_Pin);
+
+  /**/
   LL_GPIO_SetOutputPin(GPIOB, RST_Pin|CS_LCD_Pin);
 
   /**/
@@ -79,6 +82,14 @@ void MX_GPIO_Init(void)
   GPIO_InitStruct.OutputType = LL_GPIO_OUTPUT_PUSHPULL;
   GPIO_InitStruct.Pull = LL_GPIO_PULL_NO;
   LL_GPIO_Init(CS_LCD_GPIO_Port, &GPIO_InitStruct);
+
+  /**/
+  GPIO_InitStruct.Pin = line_Pin;
+  GPIO_InitStruct.Mode = LL_GPIO_MODE_OUTPUT;
+  GPIO_InitStruct.Speed = LL_GPIO_SPEED_FREQ_LOW;
+  GPIO_InitStruct.OutputType = LL_GPIO_OUTPUT_PUSHPULL;
+  GPIO_InitStruct.Pull = LL_GPIO_PULL_NO;
+  LL_GPIO_Init(line_GPIO_Port, &GPIO_InitStruct);
 
 }
 
