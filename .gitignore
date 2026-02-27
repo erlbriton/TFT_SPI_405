@@ -28,6 +28,5 @@ Thumbs.db
 
 #Драйверы
 /Drivers/
-/Core/Startup/
 /Core/Src/Backup/
 /Core/Inc/Backup/
