@@ -18,11 +18,16 @@
 #define    DC_cmd   LL_GPIO_ResetOutputPin(DC_LSD_GPIO_Port, DC_LSD_Pin)
 #define    DC_data   LL_GPIO_SetOutputPin(DC_LSD_GPIO_Port, DC_LSD_Pin)
 
-//#define    DC_cmd   LL_GPIO_ResetOutputPin(GPIOB, LL_GPIO_PIN_6)//Для проверки
-//#define    DC_data   LL_GPIO_SetOutputPin(GPIOB, LL_GPIO_PIN_6)//Для проверки
-//#define    CS_set  LL_GPIO_ResetOutputPin(GPIOA, LL_GPIO_PIN_4)//Для проверки
-//#define    CS_reset  LL_GPIO_SetOutputPin(GPIOA, LL_GPIO_PIN_4)//Для проверки
+uint8_t cool_img = 0;
 
+void shiftCooler(){
+	cool_img = !cool_img;
+	if (cool_img == 0){
+	   drawImage(cooler_0, 200, (70 + hh), 50, 52);
+	   } else {
+	   drawImage(cooler_180, 200, (70 + hh), 50, 52);
+	   }
+}
 
 void ILI9488_Reset()
 {
@@ -208,8 +213,7 @@ void setScrollArea(uint16_t topFixedArea, uint16_t bottomFixedArea)
 
 	      }
 
- void drawImage(const uint16_t* img, uint16_t x, uint16_t y, uint16_t w, uint16_t h)
-{
+ void drawImage(const uint16_t* img, uint16_t x, uint16_t y, uint16_t w, uint16_t h){
 // rudimentary clipping (drawChar w/big text requires this)
 if((x >= ILI9488_TFTWIDTH) || (y >= ILI9488_TFTHEIGHT)) return;
 if((x + w - 1) >= ILI9488_TFTWIDTH)  w = ILI9488_TFTWIDTH  - x;

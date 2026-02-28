@@ -79,5 +79,6 @@ extern uint8_t new_tmp_plt1; //Новая температура платы ед
 extern uint8_t new_tmp_plt2; //Новая температура платы десятки(17-й член нового буфера)
 extern uint8_t new_mode_2; //2-й режим кнопки новый(18-й член нового буфера)
 //void memcpy(uint8_t, uint8_t, uint8_t);
+extern volatile uint8_t is_cooler_mode;
 
 #endif /* INC_IMAGES_H_ */

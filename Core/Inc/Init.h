@@ -101,6 +101,7 @@ void drawImage(const uint16_t* img, uint16_t x, uint16_t y, uint16_t w, uint16_t
 void DWT_Init(void);
 void fillScreen(uint16_t color);
 void init_9488(void);
+void shiftCooler(void);//Вращение кулера
 
 
 #endif /* INC_INIT_H_ */

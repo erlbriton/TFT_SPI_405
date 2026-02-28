@@ -78,10 +78,11 @@ uint8_t new_set = 0; //(11-й член нового буфера)
  uint8_t new_tmp_plt2 = 0; //Новая температура платы десятки(17-й член нового буфера)
  uint8_t new_mode_2 = 0; //2-й режим кнопки новый(18-й член нового буфера)
 
-static uint8_t var_off = 0; //Флаг режима Off
-static uint8_t dots_img = 0; //Флаг включения часов
-static uint8_t cool_img = 0; //Флаг включения кулера
-static uint8_t pass_startTim2 = 0; //
+ volatile static uint8_t var_off = 0; //Флаг режима Off
+ volatile static uint8_t dots_img = 0; //Флаг включения часов
+ volatile static uint8_t cool_img = 0; //Флаг включения кулера
+ volatile static uint8_t pass_startTim2 = 0;//Флаг старта TIM2
+ extern volatile uint8_t is_cooler_mode = 0;
 
 
 //-----------------  Kонстантные массивы указателей  -----------------------------------
@@ -132,20 +133,21 @@ void screen_first(void) //Начальный экран
 	drawImage(ptr_digitgreen[new_tempset3], tempset3_plc); //Установленная температура сотни
 }
 //-------------------------------------------------------------------------------------
-void cooler_start() {
+void cooler_start(){
 	HAL_TIM_Base_Start_IT(&htim5); //Включаем кулер
 }
-void cooler_stop() {
+void cooler_stop(){
 	HAL_TIM_Base_Stop_IT(&htim5); //Выключаем кулер
 }
 //---------------------- Callbacks of TIMs -----------------------------------------
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
 //-------------Проверка включения режима "Off" в течении 10 сек-------------------------------
-	if (htim->Instance == TIM2) {
+	if (htim->Instance == TIM2){
 		turn_off();    //Включаем повара
 	}
 //------------------------Мигаем точками в часах-------------------------------------
-	if (htim->Instance == TIM4) {
+	if (htim->Instance == TIM4){
+
 		dots_img = (1 - dots_img);
 		if (dots_img == 1)
 			drawImage(dots, 365, (63 + hh), 5, 25);    //Мигаем
@@ -154,11 +156,8 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
 	}
 //------------------------ Включаем вентилятор ---------------------------------------
 	if (htim->Instance == TIM5) {
-		cool_img = (1 - cool_img);
-		if (cool_img == 1)
-			drawImage(cooler_0, 200, (70 + hh), 50, 52);
-		if (cool_img == 0)
-			drawImage(cooler_180, 200, (70 + hh), 50, 52);
+		is_cooler_mode = 1;
+		HAL_TIM_Base_Stop_IT(&htim5);
 	}
 }
 //---------- Включение режима off через 10 сек выдержки --------------------------------
@@ -229,8 +228,7 @@ void check_images() {
 			count_mode_2(new_mode_2);
 		}
 //---------------Включение или выключение вентилятора------------------------------------------------------
-		if (new_set == 1 || new_set == 2 || new_set == 6 || new_set == 7
-				|| new_set == 9) {
+		if (new_set == 1 || new_set == 2 || new_set == 6 || new_set == 7 || new_set == 9){
 			cooler_start();
 		} else {
 			cooler_stop();

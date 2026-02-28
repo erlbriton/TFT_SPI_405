@@ -60,7 +60,7 @@ void SystemClock_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
+uint8_t data_ready_flag = 0;
 /* USER CODE END 0 */
 
 /**
@@ -95,9 +95,9 @@ int main(void)
   MX_DMA_Init();
   MX_SPI1_Init();
   MX_USART1_UART_Init();
-  MX_TIM2_Init();//Задержка включения повара в режиме Off
-  MX_TIM4_Init();//Точки в часах
-  MX_TIM5_Init();//Кулер
+  MX_TIM2_Init();
+  MX_TIM4_Init();
+  MX_TIM5_Init();
   /* USER CODE BEGIN 2 */
   LL_SPI_Enable(SPI1);
   DWT_Init();
@@ -134,11 +134,13 @@ int main(void)
   	drawImage(grad_C, 402, (8 + hh), 8, 8);
   	drawImage(grad_C, 402, (108 + hh), 8, 8);
 
-  	drawImage(cooler_0, 200, (70 + hh), 50, 52);  //Вентилятор
+  	//drawImage(cooler_0, 200, (70 + hh), 50, 52);  //Вентилятор
+//  	drawImage(cooler_180, 200, (70 + hh), 50, 52);
 
   	HAL_Delay(50); // для стабилизации системы
 
   	HAL_TIM_Base_Stop_IT(&htim2);
+  	HAL_TIM_Base_Stop_IT(&htim5);
   	__HAL_UART_DISABLE(&huart1);
   	__HAL_UART_CLEAR_FLAG(&huart1,
   	UART_FLAG_IDLE | UART_FLAG_ORE | UART_FLAG_NE | UART_FLAG_FE | UART_FLAG_PE);
@@ -152,10 +154,19 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	LL_GPIO_SetOutputPin(line_GPIO_Port, line_Pin);
-	HAL_Delay(500);
-	LL_GPIO_ResetOutputPin(line_GPIO_Port, line_Pin);
-		  HAL_Delay(500);
+	  if (data_ready_flag) {
+	          data_ready_flag = 0;
+	          check_images(); // Спокойно рисуем то, что пришло по сети
+	      }
+	  if (is_cooler_mode) {
+		  is_cooler_mode = 0;
+	shiftCooler();
+	  }
+
+//	LL_GPIO_SetOutputPin(line_GPIO_Port, line_Pin);
+//	HAL_Delay(500);
+//	LL_GPIO_ResetOutputPin(line_GPIO_Port, line_Pin);
+//		  HAL_Delay(500);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

@@ -131,6 +131,9 @@ extern const uint16_t nine_green[];//-------------------------------------------
 extern const uint16_t grad_C[];
 extern const uint16_t cooler_0[];
 extern const uint16_t cooler_180[];
+extern const uint16_t cooler_black[];
+extern const uint16_t cooler_270[];
+extern const uint16_t cooler_90[];
 extern const uint16_t dots[];
 extern const uint16_t pig[];
 extern const uint16_t termometr[];
