@@ -41,7 +41,7 @@ void turn_off(void);
 void draw_turn_off(void);
 void count_mode_2(uint8_t);
 void call_uart(void);//Функция при срабатывании прерывания UART
-void turn_off(void);
+//void turn_off(void);
 void check_images(void);
 void count_temp1_off(uint8_t);
 void count_watch(uint8_t);

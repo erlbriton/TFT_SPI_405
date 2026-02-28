@@ -95,9 +95,9 @@ int main(void)
   MX_DMA_Init();
   MX_SPI1_Init();
   MX_USART1_UART_Init();
-  MX_TIM2_Init();
-  MX_TIM4_Init();
-  MX_TIM5_Init();
+  MX_TIM2_Init();//Задержка включения повара в режиме Off
+  MX_TIM4_Init();//Точки в часах
+  MX_TIM5_Init();//Кулер
   /* USER CODE BEGIN 2 */
   LL_SPI_Enable(SPI1);
   DWT_Init();

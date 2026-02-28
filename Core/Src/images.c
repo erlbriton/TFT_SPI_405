@@ -81,23 +81,25 @@ uint8_t new_set = 0; //(11-й член нового буфера)
 static uint8_t var_off = 0; //Флаг режима Off
 static uint8_t dots_img = 0; //Флаг включения часов
 static uint8_t cool_img = 0; //Флаг включения кулера
+static uint8_t pass_startTim2 = 0; //
+
 
 //-----------------  Kонстантные массивы указателей  -----------------------------------
-const uint16_t *ptr_animals[11] = { 0, cow, tea, termo, lamb, hen, pig, rabbit,
-		fish, cap, bear }; //Животные
-const uint16_t *ptr_words[11] = { 0, pred, sushca, temperature, grill, zapec,
+const uint16_t *ptr_animals[11] = {0, cow, tea, termo, lamb, hen, pig, rabbit,
+fish, cap, bear }; //Животные
+const uint16_t *ptr_words[11] = {0, pred, sushca, temperature, grill, zapec,
 		conv_txt, intensiv, standart, culinar, svet }; //Слова
 const uint16_t *ptr_digitwhite[10] = { zero, one, two, three, four, five, six,
 		seven, eight, nine }; //Белые цифры
-const uint16_t *ptr_digitwhite_big[10] = { zero_big, one_big, two_big,
+const uint16_t *ptr_digitwhite_big[10] = {zero_big, one_big, two_big,
 		three_big, four_big, five_big, six_big, seven_big, eight_big, nine_big }; //Белые большие цифры
-const uint16_t *ptr_digitgreen[10] = { zero_green, one_green, two_green,
+const uint16_t *ptr_digitgreen[10] = {zero_green, one_green, two_green,
 		three_green, four_green, five_green, six_green, seven_green,
 		eight_green, nine_green }; //Зеленые цифры
-const uint16_t *ptr_fire[2] = { fire_off, fire }; //Огонь снизу
-const uint16_t *ptr_fire_90[2] = { fire_off_90, fire_90 }; //Огонь сбоку
-const uint16_t *ptr_fire_180[2] = { fire_off, fire_180 }; //Огонь сверху
-const uint16_t *ptr_cooler[2] = { cooler_0, cooler_180 }; //Кулер
+const uint16_t *ptr_fire[2] = {fire_off, fire }; //Огонь снизу
+const uint16_t *ptr_fire_90[2] = {fire_off_90, fire_90 }; //Огонь сбоку
+const uint16_t *ptr_fire_180[2] = {fire_off, fire_180 }; //Огонь сверху
+const uint16_t *ptr_cooler[2] = {cooler_0, cooler_180}; //Кулер
 
 uint8_t size_of = 20; //Количество членов массива принимаемых данных
 
@@ -160,26 +162,25 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
 	}
 }
 //---------- Включение режима off через 10 сек выдержки --------------------------------
-void turn_off() {
-	if (new_set == 0 && var_off == 0) //Если через 10 сек режим "Off" не был выключен(проверяем для исключения ненужных переходов в этот режим)
-			{
-		HAL_TIM_Base_Stop_IT(&htim2);	//Останавливаем таймер
-		HAL_TIM_Base_Stop_IT(&htim4);
-		drawImage(off, 2, (2 + hh), 468, 148);	//Рисуем повара
-		fillRect(0, (0 + hh), 465, 2, ILI9488_CYAN);	//горизонт
-		fillRect(0, (148 + hh), 465, 2, ILI9488_CYAN);	//горизонт
-		fillRect(0, (2 + hh), 2, 148, ILI9488_CYAN);	//вертикаль
-		fillRect(463, (2 + hh), 2, 148, ILI9488_CYAN);	//вертикаль
-		drawImage(grad_w, 405, (44 + hh), 16, 16);	//Рисуем значек градусов
+void turn_off(){
+	if (new_set == 0 && var_off == 0){//Если через 10 сек режим "Off" не был выключен(проверяем для исключения ненужных переходов в этот режим)
+		HAL_TIM_Base_Stop_IT(&htim2);//Останавливаем таймер
+		HAL_TIM_Base_Stop_IT(&htim4);//Останавливаем точки в часах
+		drawImage(off, 2, (2 + hh), 468, 148);//Рисуем повара
+		fillRect(0, (0 + hh), 465, 2, ILI9488_CYAN);//горизонт
+		fillRect(0, (148 + hh), 465, 2, ILI9488_CYAN);//горизонт
+		fillRect(0, (2 + hh), 2, 148, ILI9488_CYAN);//вертикаль
+		fillRect(463, (2 + hh), 2, 148, ILI9488_CYAN);//вертикаль
+		drawImage(grad_w, 405, (44 + hh), 16, 16);//Рисуем значек градусов
 		drawImage(termometr_big, 250, (35 + hh), 34, 80);
-		HAL_TIM_Base_Stop_IT(&htim5);	       //Отключаем кулер
+		HAL_TIM_Base_Stop_IT(&htim5);//Отключаем кулер
 		var_off = 1;    //Устанавливаем флаг "Был включен режим "Off"
-	} else if (new_set == 0 && var_off == 1) {
+		//pass_startTim2 = 1;//Повар нарисован
+	} else if (new_set == 0 && var_off == 1){
 		draw_turn_off(); //и включаем режим "Off"(проверяем только текущую температуру)
 	}
 }
-void draw_turn_off() //Показываем только текущую температуру
-{
+void draw_turn_off(){ //Показываем только текущую температуру
 	drawImage(ptr_digitwhite_big[new_temp1], temp_off3_plc);
 	drawImage(ptr_digitwhite_big[new_temp2], temp_off2_plc);
 	drawImage(ptr_digitwhite_big[new_temp3], temp_off1_plc);
@@ -187,13 +188,12 @@ void draw_turn_off() //Показываем только текущую темп
 }
 /*-------------------------------------- Изменение изображений ------------------------------------*/
 void check_images() {
-	if (new_set > 10) {
+	if (new_set > 10){
 	        return; // Игнорируем некорректный пакет.
 	    }
-	if (new_set != 0)      //Если новый 11 член массива массива не равен "0"
-			{
-		if (var_off == 1) //Если быстро крутили и повар не стерся
-				{
+	if (new_set != 0){      //Если новый 11 член массива массива не равен "0"
+		pass_startTim2 = 0;
+		if (var_off == 1){ //Если быстро крутили и повар не стерся
 			screen_first(); //Рисуем экран режимов
 			var_off = 0; //обнуляем флаг режима Off   cooler_0
 		}
@@ -244,11 +244,11 @@ void check_images() {
 	}
 //---------------------------------------------------------------------------------------------
 
-	else if (new_set == 0 && var_off == 0) //Если режим Off включился только что(var_off == 0)
-			{
+	else if (new_set == 0 && var_off == 0 && pass_startTim2 == 0){ //Если режим Off включился только что(var_off == 0)
 		HAL_TIM_Base_Start_IT(&htim2); //Задержка включения режима Off
-	} else if (new_set == 0 && var_off == 1) //Если режим Off уже был включен
-			{
+		pass_startTim2 = 1;
+	} else if (new_set == 0 && var_off == 1 && pass_startTim2 == 1){//Если режим Off уже был включен
+		//pass_startTim2 = 0;
 		draw_turn_off(); //Включаем картинку режима Off
 	}
 	//HAL_GPIO_WritePin(GPIOA, Line_Pin, GPIO_PIN_SET); //Контроль рисования картинки
@@ -259,8 +259,7 @@ void check_images() {
 }
 //************************** если слишком быстро крутили и повар не стерся ***************************************************
 void test_off() {
-	if (var_off == 1) //если был режим Off
-			{
+	if (var_off == 1){ //если был режим Off
 		screen_first(); //рисуем заново весь экран
 		var_off = 0; //обнуляем флаг режима Off
 	}
