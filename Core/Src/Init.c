@@ -20,7 +20,7 @@
 
 uint8_t cool_img = 0;
 
-void shiftCooler(){
+void shiftCooler(){//Крутим кулер
 	cool_img = !cool_img;
 	if (cool_img == 0){
 	   drawImage(cooler_0, 200, (70 + hh), 50, 52);
@@ -31,37 +31,16 @@ void shiftCooler(){
 
 void ILI9488_Reset()
 {
-	 LL_GPIO_ResetOutputPin(RST_GPIO_Port, RST_Pin);
-  //  LL_GPIO_ResetOutputPin(GPIOB, LL_GPIO_PIN_0);//Для проверки
+	LL_GPIO_ResetOutputPin(RST_GPIO_Port, RST_Pin);
     HAL_Delay(5);
     LL_GPIO_SetOutputPin(RST_GPIO_Port, RST_Pin);
-   // LL_GPIO_SetOutputPin(GPIOB, LL_GPIO_PIN_0);//Для проверки
 }
 
-//void DWT_Init(void)
-//{
-//        //разрешаем использовать счётчик
-//        SCB_DEMCR |= CoreDebug_DEMCR_TRCENA_Msk;
-//         //обнуляем значение счётного регистра
-//	DWT_CYCCNT  = 0;
-//         //запускаем счётчик
-//	DWT_CONTROL |= DWT_CTRL_CYCCNTENA_Msk;
-//}
-//
-//static __inline uint32_t delta(uint32_t t0, uint32_t t1)
-//{
-//    return (t1 - t0);
-//}
-//void delay_us(uint32_t us)
-//{
-//      uint32_t t0 =  DWT->CYCCNT;
-//      uint32_t us_count_tic =  us * (SystemCoreClock/1000000);
-//      while (delta(t0, DWT->CYCCNT) < us_count_tic) ;
-//}
+
 
  void writecommand(uint8_t cmd){
 	     while (LL_SPI_IsActiveFlag_BSY(SPI1)); // Ждем завершения предыдущих передач (если они были)
-	     DC_cmd;// DC в LOW (режим команды)
+	     DC_cmd;//DC в LOW (режим команды)
 	     CS_set;//CS в LOW (выбор чипа)
 	     LL_SPI_TransmitData8(SPI1, cmd);//Кидаем байт в регистр
 	     while (LL_SPI_IsActiveFlag_BSY(SPI1));//Ждем, пока байт уйдет, прежде чем менять DC обратно
@@ -73,8 +52,6 @@ void ILI9488_Reset()
 	 CS_set;//CS в LOW (выбор чипа)
 	 LL_SPI_TransmitData8(SPI1, dt);//Кидаем байт в регистр
 }
-
-
 
 void init_9488()
 {
@@ -974,4 +951,24 @@ writedata(linebuff[b]);
 	     	     //
 	     	     //	// End of HX8357D display configuration
 	     	     //
+	     	     //}
+	     	     //void DWT_Init(void)
+	     	     //{
+	     	     //        //разрешаем использовать счётчик
+	     	     //        SCB_DEMCR |= CoreDebug_DEMCR_TRCENA_Msk;
+	     	     //         //обнуляем значение счётного регистра
+	     	     //	DWT_CYCCNT  = 0;
+	     	     //         //запускаем счётчик
+	     	     //	DWT_CONTROL |= DWT_CTRL_CYCCNTENA_Msk;
+	     	     //}
+	     	     //
+	     	     //static __inline uint32_t delta(uint32_t t0, uint32_t t1)
+	     	     //{
+	     	     //    return (t1 - t0);
+	     	     //}
+	     	     //void delay_us(uint32_t us)
+	     	     //{
+	     	     //      uint32_t t0 =  DWT->CYCCNT;
+	     	     //      uint32_t us_count_tic =  us * (SystemCoreClock/1000000);
+	     	     //      while (delta(t0, DWT->CYCCNT) < us_count_tic) ;
 	     	     //}

@@ -29,7 +29,6 @@
 #define word            170,  (8+hh),   120,  30
 
 uint8_t rxBuffer[RX_BUFFER_SIZE];  // Буфер для приема данных по DMA
-//uint8_t buff_new[PACKET_SIZE];     // Буфер для обработки пакета
 
 extern UART_HandleTypeDef huart1;  // Переменная для USART1
 extern DMA_HandleTypeDef hdma_usart1_rx;  // DMA для USART1
@@ -66,7 +65,7 @@ uint8_t new_temp3 = 0; //Новая тепература сотни (7-й чле
  uint8_t new_tempset2 = 0; //Новая уставка температуры десятки (9-й член нового буфера)
  uint8_t new_tempset3 = 0; //Новая уставка температуры сотни (10-й член нового буфера)
 //------------------Режим приготовления новый---------------------------------------
-uint8_t new_set = 0; //(11-й член нового буфера)
+uint8_t new_set = 0; //11-й член нового буфера
 //------------------Точки часов новые------------------------------------------------
  uint8_t new_watch = 0; //12-й член нового буфера
 //------------------Огонь новый-----------------------------------------------------
@@ -123,38 +122,33 @@ void screen_first(void) //Начальный экран
 	drawImage(barbecue, 430, (6 + hh), 30, 140);
 	drawImage(cooler_0, 200, (70 + hh), 50, 52);
 
-	drawImage(ptr_digitwhite[new_one_min], one_min_plc); //Изменяем единицы минут
-	drawImage(ptr_digitwhite[new_dec_min], dec_min_plc); //Изменяем десятки минут
+	drawImage(ptr_digitwhite[new_one_min], one_min_plc);//Изменяем единицы минут
+	drawImage(ptr_digitwhite[new_dec_min], dec_min_plc);//Изменяем десятки минут
 	drawImage(ptr_digitwhite[new_one_h], one_h_plc);    //Изменяем единицы часов
 	drawImage(ptr_digitwhite[new_dec_h], dec_h_plc);    //Изменяем десятки часов
-	drawImage(ptr_digitgreen[new_temp1], temp1_plc); //Текущая температура единицы
-	drawImage(ptr_digitgreen[new_temp2], temp2_plc); //Текущая температура десятки
-	drawImage(ptr_digitgreen[new_temp3], temp3_plc); //Текущая температура сотни
+	drawImage(ptr_digitgreen[new_temp1], temp1_plc);    //Текущая температура единицы
+	drawImage(ptr_digitgreen[new_temp2], temp2_plc);    //Текущая температура десятки
+	drawImage(ptr_digitgreen[new_temp3], temp3_plc);    //Текущая температура сотни
 	drawImage(ptr_digitgreen[new_tempset1], tempset1_plc); //Установленная температура единицы
 	drawImage(ptr_digitgreen[new_tempset2], tempset2_plc); //Установленная температура десятки
 	drawImage(ptr_digitgreen[new_tempset3], tempset3_plc); //Установленная температура сотни
 }
 //-------------------------------------------------------------------------------------
 void cooler_start(){
-	HAL_TIM_Base_Start_IT(&htim5); //Включаем кулер
+	HAL_TIM_Base_Start_IT(&htim5);//Включаем кулер
 }
 void cooler_stop(){
-	HAL_TIM_Base_Stop_IT(&htim5); //Выключаем кулер
+	HAL_TIM_Base_Stop_IT(&htim5);//Выключаем кулер
 }
 //---------------------- Callbacks of TIMs -----------------------------------------
-void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim){
 //-------------Проверка включения режима "Off" в течении 10 сек-------------------------------
-	if (htim->Instance == TIM2){
+	if(htim->Instance == TIM2){
 		isTurnOff = 1;
 	}
 //------------------------Мигаем точками в часах-------------------------------------
 	if (htim->Instance == TIM4){
-		is_dots_mode = 1;
-//		dots_img = (1 - dots_img);
-//		if (dots_img == 1)
-//			drawImage(dots, 365, (63 + hh), 5, 25);    //Мигаем
-//		if (dots_img == 0)
-//			drawImage(dots_off, 365, (63 + hh), 5, 25);//точками в часах
+		is_dots_mode = 1;//устанавливаем флаг мигания точек
 	}
 //------------------------ Включаем вентилятор ---------------------------------------
 	if (htim->Instance == TIM5) {
@@ -221,8 +215,10 @@ void check_images() {
 		drawImage(ptr_digitgreen[new_tempset3], tempset3_plc); //Изменяем десятки установленной температуры
 
 //---------------- Включаем или выключаем точки в часах --------------------------------
-		if(new_watch != old_watch) {
+		if(new_watch != old_watch){
+			HAL_Delay(50);
 			count_watch(new_watch); //Включаем точки на часах
+			old_watch = new_watch;
 		}
 //---------------Включение пламени-------------------------------------------------------------
 		drawImage(ptr_fire[new_fire], fire_off_plc); //Включаем нижнее пламя
@@ -240,7 +236,6 @@ void check_images() {
 			cooler_stop();
 		}
 //---------------Рисование новых данных закончено, приравниваем старые данные к новым----------------------------
-		old_watch = new_watch;
 		old_fire = new_fire;
 		old_fire_90 = new_fire_90;
 		old_fire_180 = new_fire_180;
@@ -271,28 +266,30 @@ void test_off() {
 
 void count_watch(uint8_t new_watch) //Включаем точки на часах
 {
-	if (new_watch == 1)
+	if (new_watch == 1){
 		HAL_TIM_Base_Start_IT(&htim4); //Если пришла команда "пуск режима" - включаем мигание
-	if (new_watch == 0) //Если пришла команда "стоп режима" -
+	}
+	else//Если пришла команда "стоп режима" -
 			{
-		HAL_TIM_Base_Stop_IT(&htim4); //отключаем мигание
+		HAL_TIM_Base_Stop_IT(&htim4);//отключаем мигание
 		__HAL_TIM_CLEAR_IT(&htim4, TIM_IT_UPDATE);
-		drawImage(dots, 365, (63 + hh), 5, 25); //включаем точки
+		is_dots_mode = 0;
+		drawImage(dots, 365, (63 + hh), 5, 25);//показываем немигающие точки
 	}
 }
 
 void count_mode_2(uint8_t new_mode_2) {
 	if (new_mode_2 == 1) {
-		fillRect(312, (50 + hh), 110, 3, ILI9488_RED); //                   *
-		fillRect(312, (53 + hh), 3, 47, ILI9488_RED); //Рисуем красный      *
-		fillRect(312, (100 + hh), 110, 3, ILI9488_RED); //прямоугольник вокруг*
-		fillRect(419, (53 + hh), 3, 47, ILI9488_RED); //часов              *
+		fillRect(312, (50 + hh), 110, 3, ILI9488_RED); //                       *
+		fillRect(312, (53 + hh), 3, 47, ILI9488_RED);  //  Рисуем красный       *
+		fillRect(312, (100 + hh), 110, 3, ILI9488_RED);//прямоугольник вокруг   *
+		fillRect(419, (53 + hh), 3, 47, ILI9488_RED);  //часов                  *
 	}
 	if (new_mode_2 == 0) {
-		fillRect(312, (50 + hh), 110, 3, ILI9488_BLACK); //                   *
-		fillRect(312, (53 + hh), 3, 47, ILI9488_BLACK); //Стираем красный     *
-		fillRect(312, (100 + hh), 110, 3, ILI9488_BLACK); //прямоугольник вокруг*
-		fillRect(419, (53 + hh), 3, 47, ILI9488_BLACK); //часов              *
+		fillRect(312, (50 + hh), 110, 3, ILI9488_BLACK); //                     *
+		fillRect(312, (53 + hh), 3, 47, ILI9488_BLACK);  //Стираем красный      *
+		fillRect(312, (100 + hh), 110, 3, ILI9488_BLACK);//прямоугольник вокруг *
+		fillRect(419, (53 + hh), 3, 47, ILI9488_BLACK);  //часов                *
 	}
 }
 

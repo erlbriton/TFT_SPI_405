@@ -158,23 +158,21 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	  if(data_ready_flag){
+	  if(data_ready_flag){//если пришел валидный пакет по сети
 	      data_ready_flag = 0;
-	      check_images(); // Спокойно рисуем то, что пришло по сети
+	      check_images(); //рисуем то, что пришло по сети
 	      }
-	  if(is_cooler_mode){
+	  if(is_cooler_mode){//если кулер разрешен
 		  is_cooler_mode = 0;
 			shiftCooler();
 		}
-		if (is_dots_mode) {
-			is_dots_mode = 0;
-			dots_img = !dots_img;
-			if (dots_img == 1)
-				drawImage(dots, 365, (63 + hh), 5, 25);    //Мигаем
-			if (dots_img == 0)
-				drawImage(dots_off, 365, (63 + hh), 5, 25);    //точками в часах
+		if(is_dots_mode){//если точки разрешены
+			is_dots_mode = 0;//обнуляем флаг
+			dots_img = !dots_img;//меняем видимость точек
+			if(dots_img == 1) drawImage(dots, 365, (63 + hh), 5, 25);//Мигаем
+			if(dots_img == 0) drawImage(dots_off, 365, (63 + hh), 5, 25);//точками в часах
 		}
-		if(isTurnOff){
+		if(isTurnOff){//если включен режим  Off
 			isTurnOff = 0;
 			turn_off();//Включаем повара
 		}
