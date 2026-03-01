@@ -236,7 +236,6 @@ void TIM4_IRQHandler(void)
 /**
   * @brief This function handles USART1 global interrupt.
   */
-extern uint8_t data_ready_flag;
 void USART1_IRQHandler(void)
 {
   /* USER CODE BEGIN USART1_IRQn 0 */
@@ -285,9 +284,7 @@ void USART1_IRQHandler(void)
  	              new_tmp_plt1 = buff_new[16];
  	              new_tmp_plt2 = buff_new[17];
  	              new_mode_2   = buff_new[18];
-
- 	              //check_images();//Основная работа
- 	             data_ready_flag = 1; // Указываем, что данные пришли и их надо обработать
+ 	              data_ready_flag = 1; // Указываем, что данные пришли и их надо обработать
  	          }
  	     }
  	    	      // 3. Запускаем новый прием данных через DMA

@@ -60,7 +60,7 @@ void SystemClock_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-uint8_t data_ready_flag = 0;
+volatile uint8_t data_ready_flag = 0;
 /* USER CODE END 0 */
 
 /**
@@ -100,9 +100,13 @@ int main(void)
   MX_TIM5_Init();
   /* USER CODE BEGIN 2 */
   LL_SPI_Enable(SPI1);
-  DWT_Init();
-
-  	init_9488();
+  //DWT_Init();
+  init_9488();
+  /*
+   TIM2 - задержка включения режима Off
+   TIM4 - точки в часах
+   TIM5 - кулер
+   */
 
   //Чертим прямоугольник по периметру  72x23
   	fillScreen(0x0000);
@@ -154,14 +158,26 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	  if (data_ready_flag) {
-	          data_ready_flag = 0;
-	          check_images(); // Спокойно рисуем то, что пришло по сети
+	  if(data_ready_flag){
+	      data_ready_flag = 0;
+	      check_images(); // Спокойно рисуем то, что пришло по сети
 	      }
-	  if (is_cooler_mode) {
+	  if(is_cooler_mode){
 		  is_cooler_mode = 0;
-	shiftCooler();
-	  }
+			shiftCooler();
+		}
+		if (is_dots_mode) {
+			is_dots_mode = 0;
+			dots_img = !dots_img;
+			if (dots_img == 1)
+				drawImage(dots, 365, (63 + hh), 5, 25);    //Мигаем
+			if (dots_img == 0)
+				drawImage(dots_off, 365, (63 + hh), 5, 25);    //точками в часах
+		}
+		if(isTurnOff){
+			isTurnOff = 0;
+			turn_off();//Включаем повара
+		}
 
 //	LL_GPIO_SetOutputPin(line_GPIO_Port, line_Pin);
 //	HAL_Delay(500);
