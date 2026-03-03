@@ -141,11 +141,11 @@ int main(void)
   	drawImage(errorsScreen, 0, (0 + hh), 465, 150);
   	drawImage(rightErr, 289, (46 + hh),62, 12);
   	fillRect(0, (0 + hh), 465, 2, ILI9488_CYAN); //горизонт
-  	  	  	fillRect(0, (148 + hh), 465, 2, ILI9488_CYAN); //горизонт
-  	  	  	fillRect(0, (2 + hh), 2, 148, ILI9488_CYAN); //вертикаль
-  	  	  	fillRect(463, (2 + hh), 2, 148, ILI9488_CYAN); //вертикаль
+  	fillRect(0, (148 + hh), 465, 2, ILI9488_CYAN); //горизонт
+  	fillRect(0, (2 + hh), 2, 148, ILI9488_CYAN); //вертикаль
+  	fillRect(463, (2 + hh), 2, 148, ILI9488_CYAN); //вертикаль
 
-  	HAL_Delay(100000);
+  	HAL_Delay(10000);
 
   	//drawImage(cooler_0, 200, (70 + hh), 50, 52);  //Вентилятор
 //  	drawImage(cooler_180, 200, (70 + hh), 50, 52);
