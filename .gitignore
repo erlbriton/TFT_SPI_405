@@ -18,6 +18,7 @@
 *.swp
 *.swo
 *.bak
+.mxproject
 
 # Генерация кода CubeMX (файл ioc можно хранить!)
 /MXGenerated/
