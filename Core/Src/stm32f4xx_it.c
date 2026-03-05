@@ -256,12 +256,15 @@ void USART1_IRQHandler(void)
 
  	      // Если мы получили хотя бы один полный пакет данных
  	      if (bytesReceived >= PACKET_SIZE)
+ 	    // if (bytesReceived >= 20)
  	      {
  	          // Копируем данные в buff_new
  	         memcpy(buff_new, rxBuffer, PACKET_SIZE);
 
  	          // Обрабатываем полученный пакет данных
- 	          if (buff_new[0] == 0x97 && buff_new[19] == 0x97) //Проверяем целостность пришедшей посылки
+// 	        buff_new[0] = 0x97;
+// 	        buff_new[20] = 0x97;
+ 	         if (buff_new[0] == 151 && buff_new[20] == 151) //Проверяем целостность пришедшей посылки
  	          {
  	              new_one_min  = buff_new[1];
  	              new_dec_min  = buff_new[2];
@@ -281,6 +284,7 @@ void USART1_IRQHandler(void)
  	              new_tmp_plt1 = buff_new[16];
  	              new_tmp_plt2 = buff_new[17];
  	              new_mode_2   = buff_new[18];//Рамка вокруг часов
+ 	              error        = buff_new[19];
  	              data_ready_flag = 1; // Указываем, что данные пришли и их надо обработать
  	          }
  	     }

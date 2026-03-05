@@ -9,7 +9,7 @@
 #define INC_USART_DMA_RX_H_
 
 #define RX_BUFFER_SIZE 64
-#define PACKET_SIZE    20
+#define PACKET_SIZE    21
 
 extern uint8_t rxBuffer[RX_BUFFER_SIZE];
 extern uint8_t buff_new[PACKET_SIZE];
