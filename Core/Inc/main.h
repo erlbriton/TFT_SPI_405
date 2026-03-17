@@ -160,7 +160,12 @@ extern const uint16_t fire_off_90[];////Стираем боковое пламя
 extern const uint16_t tmp_off[];
 extern const uint16_t dots_off[];//Стираем точки в часах
 extern const uint16_t grad_w[];
-extern const uint16_t errorsScreen[];
+extern const uint16_t errorDown[];
+extern const uint16_t errorGrill[];
+extern const uint16_t errorRight[];
+extern const uint16_t obryvDown[];
+extern const uint16_t obryvGrill[];
+extern const uint16_t obryvRight[];
 extern const uint16_t downErr[];
 extern const uint16_t grillErr[];
 extern const uint16_t grillErr[];
