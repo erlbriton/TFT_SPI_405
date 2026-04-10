@@ -21,12 +21,12 @@
 #define temp1_plc       378,  (8+hh),    15,  35
 #define temp2_plc       360,  (8+hh),    15,  35
 #define temp3_plc       342,  (8+hh),    15,  35
-#define off_plc           2,  (2+hh),   468, 148
-#define fire_off_plc      2,  (124+hh),  138, 23//Откорректировать!
-#define fire_off90_plc  125,  (2+hh),    23, 136
-#define fire_off180_plc   2,  (2+hh),   138,  23
-#define animal            8,  (32+hh),  120,  80
-#define word            170,  (8+hh),   120,  30
+#define off_plc           2,  (2+hh),    468, 148
+#define fire_off_plc      2,  (124+hh),  138, 23
+#define fire_off90_plc  125,  (2+hh),    23,  136
+#define fire_off180_plc   2,  (2+hh),    138, 23
+#define animal            8,  (32+hh),   120, 80
+#define word            170,  (8+hh),    120, 30
 
 uint8_t rxBuffer[RX_BUFFER_SIZE];  // Буфер для приема данных по DMA
 
