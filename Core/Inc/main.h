@@ -171,6 +171,7 @@ extern const uint16_t grillErr[];
 extern const uint16_t grillErr[];
 extern const uint16_t rightErr[];
 extern const uint16_t obryvTens[];
+extern const uint16_t onThreetens[];
 
 //Слова
 extern const uint16_t pred[];

@@ -103,6 +103,7 @@ const uint16_t *ptr_fire[2] = {fire_off, fire }; //Огонь снизу
 const uint16_t *ptr_fire_90[2] = {fire_off_90, fire_90 }; //Огонь сбоку
 const uint16_t *ptr_fire_180[2] = {fire_off, fire_180 }; //Огонь сверху
 const uint16_t *ptr_cooler[2] = {cooler_0, cooler_180}; //Кулер
+const uint16_t *ptr_error[7] = {errorDown, errorGrill, errorRight, obryvDown, obryvGrill, obryvRight, onThreetens};//Экраны ошибок
 
 uint8_t size_of = 21; //Количество членов массива принимаемых данных
 
