@@ -9,9 +9,8 @@
 #define INC_INIT_H_
 
 #include "stm32f4xx_hal.h"
+#include "fonts.h"
 
-#define ADDR_CMD        *(uint8_t*)0x60000000
-#define ADDR_DATA        *(uint8_t*)0x60010000
 #define  RESET_ACTIVE   HAL_GPIO_WritePin(GPIOD, GPIO_PIN_6, GPIO_PIN_RESET);
 #define  RESET_IDLE     HAL_GPIO_WritePin(GPIOD, GPIO_PIN_6, GPIO_PIN_SET);
 
@@ -102,6 +101,8 @@ void DWT_Init(void);
 void fillScreen(uint16_t color);
 void init_9488(void);
 void shiftCooler(void);//Вращение кулера
+void TFT_WriteChar(uint16_t x, uint16_t y, uint8_t ch, FontDef font, uint16_t color, uint16_t bgcolor);
+void TFT_WriteString(uint16_t x, uint16_t y, const char* str, FontDef font, uint16_t color, uint16_t bgcolor);
 
 
 #endif /* INC_INIT_H_ */

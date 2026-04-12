@@ -369,7 +369,41 @@ writedata(linebuff[b]);
 	     	      {
 	     	        writecommand(i);
 	     	      }
+	     	     //-------------------------------------Отрисовка одного символа------------------------------------------
+	     	     void TFT_WriteChar(uint16_t x, uint16_t y, uint8_t ch, FontDef font, uint16_t color, uint16_t bgcolor) {
+	     	         uint32_t i, j, b;
 
+	     	         setAddrWindow(x, y, x + font.width - 1, y + font.height - 1);
+
+	     	         for (i = 0; i < font.height; i++) {
+	     	             // Берем строку бит из массива шрифта
+	     	             b = font.data[(ch - 32) * font.height + i];
+
+	     	             for (j = 0; j < font.width; j++) {
+	     	                 // Проверяем каждый бит слева направо
+	     	                 if (b & (0x8000 >> j)) {
+	     	                     write16BitColor(color);
+	     	                 } else {
+	     	                     write16BitColor(bgcolor);
+	     	                 }
+	     	             }
+	     	         }
+	     	     }
+//-----------------------------------------Вывод строки------------------------------------------------------------------------
+	     	    void TFT_WriteString(uint16_t x, uint16_t y, const char* str, FontDef font, uint16_t color, uint16_t bgcolor) {
+	     	        while (*str) {
+	     	            // Берем символ как беззнаковое число 0-255
+	     	            uint8_t ch = (uint8_t)*str;
+
+	     	            TFT_WriteChar(x, y, ch, font, color, bgcolor);
+
+	     	            x += font.width;
+	     	            str++;
+
+	     	            // Чтобы не выйти за границы экрана ILI9488
+	     	            if (x + font.width >= 480) break;
+	     	        }
+	     	    }
 
 	     	     // void init_9341()
 	     	     //  {

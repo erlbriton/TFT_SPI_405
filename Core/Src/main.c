@@ -185,6 +185,9 @@ int main(void)
 			isTurnOff = 0;
 			turn_off();//Включаем повара
 		}
+		TFT_WriteString(10, 50, "SYSTEM READY", Font_11x18, ILI9488_GREEN, ILI9488_BLACK);
+		TFT_WriteString(10, 100, "TEMP: 180 C", Font_11x18, ILI9488_WHITE, ILI9488_BLACK);
+		TFT_WriteString(10, 150, "HEATER 1: OK", Font_11x18, ILI9488_YELLOW, ILI9488_BLACK);
 
 //	LL_GPIO_SetOutputPin(line_GPIO_Port, line_Pin);
 //	HAL_Delay(500);
