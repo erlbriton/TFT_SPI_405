@@ -185,9 +185,17 @@ int main(void)
 			isTurnOff = 0;
 			turn_off();//Включаем повара
 		}
-		TFT_WriteString(10, 50, "SYSTEM READY", Font_11x18, ILI9488_GREEN, ILI9488_BLACK);
-		TFT_WriteString(10, 100, "TEMP: 180 C", Font_11x18, ILI9488_WHITE, ILI9488_BLACK);
-		TFT_WriteString(10, 150, "HEATER 1: OK", Font_11x18, ILI9488_YELLOW, ILI9488_BLACK);
+
+//		fillScreen(0x0000);
+//		  	fillRect(0, (0 + hh), 465, 2, ILI9488_CYAN); //горизонт
+//		  	fillRect(0, (148 + hh), 465, 2, ILI9488_CYAN); //горизонт
+//		  	fillRect(0, (2 + hh), 2, 148, ILI9488_CYAN); //вертикаль
+//		  	fillRect(463, (2 + hh), 2, 148, ILI9488_CYAN); //вертикаль
+//		  	drawImage(vnimanie, 170,  (8+hh),    188, 23);
+//		TFT_WriteString(30, 60, "Обнаружена неисправность нижнего тена", Font_11x18, ILI9488_WHITE, ILI9488_BLACK);
+//		HAL_Delay(500);
+//		screen_first();
+
 
 //	LL_GPIO_SetOutputPin(line_GPIO_Port, line_Pin);
 //	HAL_Delay(500);

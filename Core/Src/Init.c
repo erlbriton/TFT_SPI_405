@@ -392,15 +392,42 @@ writedata(linebuff[b]);
 //-----------------------------------------Вывод строки------------------------------------------------------------------------
 	     	    void TFT_WriteString(uint16_t x, uint16_t y, const char* str, FontDef font, uint16_t color, uint16_t bgcolor) {
 	     	        while (*str) {
-	     	            // Берем символ как беззнаковое число 0-255
 	     	            uint8_t ch = (uint8_t)*str;
+	     	            uint8_t index = 0; // По умолчанию пробел
 
-	     	            TFT_WriteChar(x, y, ch, font, color, bgcolor);
+	     	            // Обработка двухбайтового UTF-8 (Кириллица)
+	     	            if (ch == 0xD0 || ch == 0xD1) {
+	     	                uint8_t head = ch;
+	     	                str++; // Переходим ко второму байту
+	     	                uint8_t tail = (uint8_t)*str;
+
+	     	                if (head == 0xD0) {
+	     	                    // А-П (0x90 - 0xAF) -> индексы 1-32
+	     	                    if (tail >= 0x90 && tail <= 0xAF) {
+	     	                        index = (tail - 0x90) + 1;
+	     	                    }
+	     	                    // а-п (0xB0 - 0xBF) -> индексы 1-16 (маленькие буквы станут большими)
+	     	                    else if (tail >= 0xB0 && tail <= 0xBF) {
+	     	                        index = (tail - 0xB0) + 1;
+	     	                    }
+	     	                } else if (head == 0xD1) {
+	     	                    // р-я (0x80 - 0x8F) -> индексы 17-32
+	     	                    if (tail >= 0x80 && tail <= 0x8F) {
+	     	                        index = (tail - 0x80) + 17;
+	     	                    }
+	     	                }
+	     	            }
+	     	            else if (ch == 32) { // Пробел
+	     	                index = 0;
+	     	            }
+
+	     	            // Вызываем отрисовку. +32 нужно, так как в WriteChar
+	     	            // внутри стоит вычитание (ch - 32).
+	     	            TFT_WriteChar(x, y, index + 32, font, color, bgcolor);
 
 	     	            x += font.width;
-	     	            str++;
+	     	            str++; // Переходим к следующему символу
 
-	     	            // Чтобы не выйти за границы экрана ILI9488
 	     	            if (x + font.width >= 480) break;
 	     	        }
 	     	    }

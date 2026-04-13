@@ -104,7 +104,7 @@ const uint16_t *ptr_fire[2] = {fire_off, fire }; //Огонь снизу
 const uint16_t *ptr_fire_90[2] = {fire_off_90, fire_90 }; //Огонь сбоку
 const uint16_t *ptr_fire_180[2] = {fire_off, fire_180 }; //Огонь сверху
 const uint16_t *ptr_cooler[2] = {cooler_0, cooler_180}; //Кулер
-const uint16_t *ptr_error[7] = {errorDown, errorGrill, errorRight, obryvDown, obryvGrill, obryvRight, onThreetens};//Экраны ошибок
+const uint16_t *ptr_error[7] = {};//Экраны ошибок
 
 uint8_t size_of = 21; //Количество членов массива принимаемых данных
 
@@ -260,9 +260,16 @@ void check_images() {
 	HAL_NVIC_EnableIRQ(USART1_IRQn);
 	SET_BIT(RCC->CSR, RCC_CSR_RMVF);//Сбросим флаги всех прерываний от RCC
 	//HAL_IWDG_Refresh(&hiwdg); //Обнуляем watchdog
+	//HAL_Delay(2000);
 }
 	else{
-		//drawImage(ptr_error[error], errorDownload);
+		fillScreen(0x0000);
+		fillRect(0, (0 + hh), 465, 2, ILI9488_CYAN); //горизонт
+		fillRect(0, (148 + hh), 465, 2, ILI9488_CYAN); //горизонт
+		fillRect(0, (2 + hh), 2, 148, ILI9488_CYAN); //вертикаль
+		fillRect(463, (2 + hh), 2, 148, ILI9488_CYAN); //вертикаль
+		drawImage(vnimanie, 170,  (8+hh),    188, 23);
+		TFT_WriteString(30, 60, "Обнаружена неисправность нижнего тена", Font_11x18, ILI9488_WHITE, ILI9488_BLACK);
 	}
 }
 //************************** если слишком быстро крутили и повар не стерся ***************************************************
