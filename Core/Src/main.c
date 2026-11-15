@@ -19,6 +19,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "dma.h"
+#include "iwdg.h"
 #include "spi.h"
 #include "tim.h"
 #include "usart.h"
@@ -98,14 +99,12 @@ int main(void)
   MX_TIM2_Init();
   MX_TIM4_Init();
   MX_TIM5_Init();
+  MX_IWDG_Init();
   /* USER CODE BEGIN 2 */
   LL_SPI_Enable(SPI1);
   //DWT_Init();
   init_9488();
   /*
-   TIM2 - задержка включения режима Off
-   TIM4 - точки в часах
-   TIM5 - кулер
    */
 
   //Чертим прямоугольник по периметру  72x23
@@ -138,18 +137,6 @@ int main(void)
   	drawImage(grad_C, 402, (8 + hh), 8, 8);
   	drawImage(grad_C, 402, (108 + hh), 8, 8);
 
-//  	drawImage(errorsScreen, 0, (0 + hh), 465, 150);
-//  	drawImage(grillErr, 150, (66 + hh),88, 16);
-//  	fillRect(0, (0 + hh), 465, 2, ILI9488_CYAN); //горизонт
-//  	fillRect(0, (148 + hh), 465, 2, ILI9488_CYAN); //горизонт
-//  	fillRect(0, (2 + hh), 2, 148, ILI9488_CYAN); //вертикаль
-//  	fillRect(463, (2 + hh), 2, 148, ILI9488_CYAN); //вертикаль
-
-  	//HAL_Delay(100000);
-
-  	//drawImage(cooler_0, 200, (70 + hh), 50, 52);  //Вентилятор
-//  	drawImage(cooler_180, 200, (70 + hh), 50, 52);
-
   	HAL_Delay(50); // для стабилизации системы
 
   	HAL_TIM_Base_Stop_IT(&htim2);
@@ -160,6 +147,7 @@ int main(void)
   	__HAL_UART_ENABLE(&huart1);
   	HAL_UART_Receive_DMA(&huart1, rxBuffer, RX_BUFFER_SIZE);//Запускаем USART через DMA
   	__HAL_UART_ENABLE_IT(&huart1, UART_IT_IDLE);//Разрешаем прерывание UART по концу передачи
+  	__HAL_IWDG_START(&hiwdg);
 
   /* USER CODE END 2 */
 
@@ -185,22 +173,7 @@ int main(void)
 			isTurnOff = 0;
 			turn_off();//Включаем повара
 		}
-
-//		fillScreen(0x0000);
-//		  	fillRect(0, (0 + hh), 465, 2, ILI9488_CYAN); //горизонт
-//		  	fillRect(0, (148 + hh), 465, 2, ILI9488_CYAN); //горизонт
-//		  	fillRect(0, (2 + hh), 2, 148, ILI9488_CYAN); //вертикаль
-//		  	fillRect(463, (2 + hh), 2, 148, ILI9488_CYAN); //вертикаль
-//		  	drawImage(vnimanie, 170,  (8+hh),    188, 23);
-//		TFT_WriteString(30, 60, "Обнаружена неисправность нижнего тена", Font_11x18, ILI9488_WHITE, ILI9488_BLACK);
-//		HAL_Delay(500);
-//		screen_first();
-
-
-//	LL_GPIO_SetOutputPin(line_GPIO_Port, line_Pin);
-//	HAL_Delay(500);
-//	LL_GPIO_ResetOutputPin(line_GPIO_Port, line_Pin);
-//		  HAL_Delay(500);
+		HAL_IWDG_Refresh(&hiwdg); //Обнуляем watchdog
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -223,6 +196,13 @@ void SystemClock_Config(void)
 
    /* Wait till HSE is ready */
   while(LL_RCC_HSE_IsReady() != 1)
+  {
+
+  }
+  LL_RCC_LSI_Enable();
+
+   /* Wait till LSI is ready */
+  while(LL_RCC_LSI_IsReady() != 1)
   {
 
   }
