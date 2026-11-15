@@ -12,7 +12,6 @@
 #include "images.h"
 #include "Init.h"
 #include "usart_dma_rx.h"
-//#include "iwdg.h"
 
 #define one_min_plc     397,  (53+hh),   20,  45
 #define dec_min_plc     375,  (53+hh),   20,  45
@@ -201,6 +200,33 @@ const char* error_msgs[] = {
 };
 
 void check_images() {
+	 // =====================================================================
+	    // 🎯 БЛОК ЗАЩИТЫ ОТ ПОМЕХ (Ограничиваем все индексы массивов)
+	    // =====================================================================
+	    if (error > 7) error = 0; // В массиве error_msgs всего 8 элементов (0-7)
+
+	    if (new_set > 10) new_set = 0; // В массивах картинок 11 элементов (0-10)
+
+	    // Защита цифр (чтобы не выйти за пределы массивов от 0 до 9)
+	    if (new_temp1 > 9) new_temp1 = 0;
+	    if (new_temp2 > 9) new_temp2 = 0;
+	    if (new_temp3 > 9) new_temp3 = 0;
+
+	    if (new_tempset1 > 9) new_tempset1 = 0;
+	    if (new_tempset2 > 9) new_tempset2 = 0;
+	    if (new_tempset3 > 9) new_tempset3 = 0;
+
+	    // Защита времени (минуты 0-59, часы 0-23)
+	    if (new_one_min > 9) new_one_min = 0;
+	    if (new_dec_min > 5) new_dec_min = 0; // Минут не может быть больше 59
+	    if (new_one_h > 9)   new_one_h = 0;
+	    if (new_dec_h > 2)   new_dec_h = 0;   // Часов не может быть больше 23
+
+	    // Защита огня (массивы ptr_fire имеют размер 2, индексы только 0 или 1)
+	    if (new_fire > 1) new_fire = 0;
+	    if (new_fire_90 > 1) new_fire_90 = 0;
+	    if (new_fire_180 > 1) new_fire_180 = 0;
+	    // =====================================================================
 	// 1. Сначала определяем, должны ли мы сейчас принудительно показывать ошибку
 	static uint8_t last_force_state = 0; // Храним предыдущее состояние (0-норма, 1-ошибка)
 	    uint8_t force_error_screen = 0;
@@ -261,7 +287,7 @@ void check_images() {
 
 //---------------- Включаем или выключаем точки в часах --------------------------------
 		if(new_watch != old_watch){
-			HAL_Delay(50);
+			//HAL_Delay(50);
 			count_watch(new_watch); //Включаем точки на часах
 			old_watch = new_watch;
 		}
